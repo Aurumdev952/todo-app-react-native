@@ -10,23 +10,30 @@ import {
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
-import { Stack, router, useRouter } from "expo-router";
-import { useState } from "react";
+import { Stack, useRouter, useGlobalSearchParams } from "expo-router";
+import { useState, useEffect } from "react";
 import useStore from "@/utils/store";
-import "fast-text-encoding";
-import { createId } from "@paralleldrive/cuid2";
-export default function ModalScreen() {
+import { Todo } from "@/@types/Todo";
+export default function UpdateModalScreen() {
   const router = useRouter();
-  const { addTodo } = useStore();
+  const { id } = useGlobalSearchParams();
+  const { updateTodo, todos } = useStore();
+  const [todo, setTodo] = useState<Todo | undefined>(undefined);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const createTodo = () => {
+  useEffect(() => {
+    const todo = todos.find((t) => t.id === id);
+    setTodo(todo);
+    setTitle(todo?.title ?? "");
+    setDescription(todo?.description ?? "");
+  }, []);
+  const updateTodoFunc = () => {
     if (title.length > 0 && description.length > 0) {
-      addTodo({
+      updateTodo({
+        id: todo?.id ?? "",
         title,
         description,
-        date: Date.now().toString(),
-        id: createId(),
+        date: todo?.date ?? "",
       });
       router.back();
     }
@@ -39,7 +46,7 @@ export default function ModalScreen() {
         }}
       />
       <View style={styles.container}>
-        <Text style={styles.title}>Create a new todo</Text>
+        <Text style={styles.title}>Update todo</Text>
         <View style={styles.formWrapper}>
           <Text style={styles.label}>title</Text>
           <TextInput
@@ -56,14 +63,14 @@ export default function ModalScreen() {
             multiline
           />
         </View>
-        <TouchableOpacity style={styles.btn} onPress={createTodo}>
+        <TouchableOpacity style={styles.btn} onPress={updateTodoFunc}>
           <Text
             style={{
               color: "#fff",
               fontSize: 18,
             }}
           >
-            create new todo
+            update todo
           </Text>
         </TouchableOpacity>
       </View>
