@@ -11,16 +11,31 @@ import {
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Stack } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Todo } from "@/@types/Todo";
 import TodoComponent from "@/components/Todo";
 import "fast-text-encoding";
 import { createId } from "@paralleldrive/cuid2";
 import useStore from "@/utils/store";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { db } from "../_layout";
 
 const App = () => {
-  const { todos } = useStore();
+  const { todos, setTodos } = useStore();
+  useEffect(() => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql("select * from todos", [], (_, { rows }) => {
+          const data = rows._array as unknown as Todo[];
+          console.log(rows);
+          setTodos(data);
+        });
+      },
+      (e) => {
+        console.log("error while", e);
+      }
+    );
+  }, []);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <SafeAreaView style={{ flex: 1 }}>

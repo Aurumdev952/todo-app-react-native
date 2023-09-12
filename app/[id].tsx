@@ -14,6 +14,7 @@ import { Stack, useRouter, useGlobalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import useStore from "@/utils/store";
 import { Todo } from "@/@types/Todo";
+import { db } from "./_layout";
 export default function UpdateModalScreen() {
   const router = useRouter();
   const { id } = useGlobalSearchParams();
@@ -29,12 +30,26 @@ export default function UpdateModalScreen() {
   }, []);
   const updateTodoFunc = () => {
     if (title.length > 0 && description.length > 0) {
-      updateTodo({
-        id: todo?.id ?? "",
-        title,
-        description,
-        date: todo?.date ?? "",
-      });
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            "update todos where id = ? set title = ?, description = ?) values (?, ?, ?)",
+            [todo?.id ?? null, title, description]
+          );
+        },
+        (e) => {
+          console.log("error while", e.message);
+        },
+        () => {
+          updateTodo({
+            id: todo?.id ?? "",
+            title,
+            description,
+            date: todo?.date ?? "",
+          });
+        }
+      );
+
       router.back();
     }
   };

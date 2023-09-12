@@ -6,6 +6,7 @@ interface Store {
   addTodo: (todo: Todo) => void;
   deleteTodo: (id: string) => void;
   updateTodo: (todo: Todo) => void;
+  setTodos: (todos: Todo[]) => void;
 }
 
 const useStore = create<Store>((set) => ({
@@ -35,6 +36,11 @@ const useStore = create<Store>((set) => ({
       return {
         todos: newtodo,
       };
+    });
+  },
+  setTodos(todos) {
+    set({
+      todos,
     });
   },
 }));

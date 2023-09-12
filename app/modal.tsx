@@ -15,19 +15,39 @@ import { useState } from "react";
 import useStore from "@/utils/store";
 import "fast-text-encoding";
 import { createId } from "@paralleldrive/cuid2";
+import { db } from "./_layout";
 export default function ModalScreen() {
   const router = useRouter();
   const { addTodo } = useStore();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
   const createTodo = () => {
     if (title.length > 0 && description.length > 0) {
-      addTodo({
-        title,
-        description,
-        date: Date.now().toString(),
-        id: createId(),
-      });
+      const date = Date.now().toString();
+      const id = createId();
+      console.log(id);
+
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            "insert into todos (id, title, description, date, done) values (?, ?, ?, ?, 0)",
+            [id, title, description, date]
+          );
+        },
+        (e) => {
+          console.log("error while", e.message);
+        },
+        () => {
+          addTodo({
+            title,
+            description,
+            date,
+            id,
+          });
+        }
+      );
+
       router.back();
     }
   };

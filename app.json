@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "todo-app2",
-    "slug": "todo-app2",
+    "slug": "mytodo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -35,6 +35,21 @@
     "experiments": {
       "tsconfigPaths": true,
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a02f6ddf-14b6-4fc6-bdac-8575bbea910e"
+      }
+    },
+    "owner": "aurumdev",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a02f6ddf-14b6-4fc6-bdac-8575bbea910e"
     }
   }
 }

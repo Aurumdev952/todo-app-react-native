@@ -5,6 +5,7 @@ import React from "react";
 import moment from "moment";
 import useStore from "@/utils/store";
 import { useRouter } from "expo-router";
+import { db } from "@/app/_layout";
 const TodoComp: React.FC<Todo> = ({ id, title, description, date }) => {
   const { deleteTodo } = useStore();
   const router = useRouter();
@@ -29,7 +30,21 @@ const TodoComp: React.FC<Todo> = ({ id, title, description, date }) => {
         >
           <FontAwesome color={"#000"} name="edit" size={28} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => deleteTodo(id)}>
+        <TouchableOpacity
+          onPress={() => {
+            db.transaction(
+              (tx) => {
+                tx.executeSql(`delete from todos where id = ?;`, [id]);
+              },
+              (e) => {
+                console.log("error while", e.message);
+              },
+              () => {
+                deleteTodo(id);
+              }
+            );
+          }}
+        >
           <FontAwesome color={"#000"} name="trash" size={28} />
         </TouchableOpacity>
       </View>
